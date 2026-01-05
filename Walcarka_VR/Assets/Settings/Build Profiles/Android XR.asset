@@ -1094,7 +1094,7 @@ MonoBehaviour:
   m_DefaultQualityLevel: Android XR (Build Profile)
   m_QualityLevels:
   - Very Low
-  - Low
+  - Medium
   - Medium
   - High
   - Very High
