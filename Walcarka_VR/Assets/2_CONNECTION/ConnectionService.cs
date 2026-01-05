@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using TMPro;
 
 [System.Serializable]
 public class MachineData
@@ -11,14 +12,37 @@ public class MachineData
 
 public class ConnectionService : MonoBehaviour
 {
-    [SerializeField] private string serverUrl = "http://localhost:8080/machine-service";
+    [SerializeField] private string serverUrl = "http://localhost:8080/machine-state";
     [SerializeField] private float updateInterval = 1.0f;
 
     [SerializeField] private WalcarkaManager manager;
 
+    [SerializeField] private TMP_InputField ipInputField;
+    private string savedIP;
+
     private void Start()
     {
+        savedIP = PlayerPrefs.GetString("SavedRemoteIP", "localhost");
+        if (ipInputField != null) ipInputField.text = savedIP;
+
         StartCoroutine(GetDataLoop());
+    }
+
+    public void SaveNewIP()
+    {
+        if (ipInputField != null)
+        {
+            savedIP = ipInputField.text;
+            PlayerPrefs.SetString("SavedRemoteIP", savedIP);
+            PlayerPrefs.Save();
+            UpdateUrl();
+            Debug.Log("Zapisano nowe IP: " + savedIP);
+        }
+    }
+
+    void UpdateUrl()
+    {
+        serverUrl = $"http://{savedIP}:8080/machine-state";
     }
 
     IEnumerator GetDataLoop()
