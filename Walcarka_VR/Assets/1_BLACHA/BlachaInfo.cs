@@ -4,7 +4,7 @@ using TMPro;
 public class BlachaInfo : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI textDisplay;
-    public MeshFilter meshFilter;
+    [HideInInspector] public MeshFilter meshFilter;
     [HideInInspector] public Vector3 meshSize;
 
     public float realWidth;

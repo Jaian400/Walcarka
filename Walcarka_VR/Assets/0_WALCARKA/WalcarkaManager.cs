@@ -1,11 +1,13 @@
 using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
 
 public class WalcarkaManager : MonoBehaviour
 {
     [Header("Prêdkoœæ obrotu wa³ów (OMEGA)")]
     public float rollerSpeed = 100f;
 
-    [Header("Rozstaw wa³ów")]
+    [Header("Rozstaw wa³ów (w metrach)")]
     [Range(0.01f, 0.2f)] public float rollerGap = 0.05f; 
     [SerializeField] Transform topRoller;
     [SerializeField] Transform bottomRoller;
@@ -17,6 +19,11 @@ public class WalcarkaManager : MonoBehaviour
     [HideInInspector] public float rollerRadius;
 
     public bool powerOn = true;
+
+    [Header("UI References")]
+    [SerializeField] private Image powerButtonImage;
+    [SerializeField] private TextMeshProUGUI rpmText;
+    [SerializeField] private TextMeshProUGUI gapText;
 
     void Start()
     {
@@ -30,6 +37,8 @@ public class WalcarkaManager : MonoBehaviour
         }
 
         CalculateRollerRadius();
+
+        UpdateUI();
     }
 
     void CalculateRollerRadius()
@@ -48,6 +57,31 @@ public class WalcarkaManager : MonoBehaviour
         }
     }
 
+    private void UpdateUI()
+    {
+        if (powerButtonImage == null)
+        {
+            return;
+        }
+
+        if (powerOn) 
+        {
+            powerButtonImage.color = Color.green;
+        }
+        else
+        {
+            powerButtonImage.color = Color.red;
+        }
+
+        
+    }
+
+    public void PowerSwitch()
+    {
+        powerOn = !powerOn;
+        UpdateUI();
+    }
+
     void Update()
     {
         if (powerOn)
@@ -58,5 +92,14 @@ public class WalcarkaManager : MonoBehaviour
                 bottomRoller.localPosition = new Vector3(bottomInitialPos.x, centerPoint.position.y - (rollerGap / 2) - rollerRadius, bottomInitialPos.z);
             }
         }
+
+        if (rpmText != null)
+            if(powerOn)
+                rpmText.text = $"OMEGA: {rollerSpeed} rad/s";
+            else
+                rpmText.text = $"OMEGA: 0 rad/s";
+
+        if (gapText != null)
+            gapText.text = $"GAP: {rollerGap * 1000:F1} mm";
     }
 }

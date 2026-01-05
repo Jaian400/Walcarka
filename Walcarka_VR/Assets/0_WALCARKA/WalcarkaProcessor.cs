@@ -183,6 +183,11 @@ public class WalcarkaProcessor : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!manager.powerOn)
+        {
+            return;
+        }
+
         if (!isProcessing || rolledObject == null)
         {
             return;
