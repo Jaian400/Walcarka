@@ -17,6 +17,7 @@ public class ConnectionBenchmark : MonoBehaviour
 
     [Header("UI")]
     public TextMeshProUGUI statsText;
+    public TextMeshProUGUI batchSizeInMBText;
     private string logFilePath;
 
     private TcpClient client;
@@ -31,12 +32,37 @@ public class ConnectionBenchmark : MonoBehaviour
             File.WriteAllText(logFilePath, "Timestamp;BatchSize_MB;Time_ms;Speed_Mbps;FPS\n");
         }
 
+        batchSizeInMBText.text = (testBatchSize / 1024 / 1024).ToString();
+
         await ConnectToServer();
     }
 
     public void UI_TriggerBenchmark()
     {
         RunTest(testBatchSize);
+    }
+
+    /*
+    public void UI_SetBatchSize(string input)
+    {
+        if (int.TryParse(input, out int result))
+        {
+            testBatchSize = result / 1024 ;
+            statsText.text = $"Ustawiono paczkê: {testBatchSize / 1024f / 1024f:F2} MB";
+        }
+    }
+    */
+
+    public void UI_AddMB()
+    {
+        testBatchSize += 1 * 1024 * 1024;
+        batchSizeInMBText.text = (testBatchSize / 1024 / 1024).ToString();
+    }
+
+    public void UI_SetServerIP(string input)
+    {
+        serverIP = input;
+        statsText.text = $"Zmieniono IP na: {serverIP}";
     }
 
     public void RunTest(int sizeInBytes)

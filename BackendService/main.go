@@ -41,7 +41,7 @@ func startTCPServer() {
 		log.Println(err)
 		return
 	}
-	log.Println("Benchmark Server TCP listen on :8081...")
+	log.Println("Server TCP listen on http://localhost:8081...")
 
 	for {
 		conn, err := ln.Accept()
