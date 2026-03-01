@@ -31,7 +31,7 @@ MonoBehaviour:
     - line: '|   AndroidProfiler: 0'
     - line: '|   AndroidFilterTouchesWhenObscured: 0'
     - line: '|   AndroidEnableSustainedPerformanceMode: 0'
-    - line: '|   defaultScreenOrientation: 4'
+    - line: '|   defaultScreenOrientation: 3'
     - line: '|   targetDevice: 2'
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
@@ -41,7 +41,7 @@ MonoBehaviour:
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
         0.1254902, a: 1}'
-    - line: '|   m_ShowUnitySplashScreen: 1'
+    - line: '|   m_ShowUnitySplashScreen: 0'
     - line: '|   m_ShowUnitySplashLogo: 1'
     - line: '|   m_SplashScreenOverlayOpacity: 1'
     - line: '|   m_SplashScreenAnimation: 1'
@@ -70,7 +70,7 @@ MonoBehaviour:
     - line: '|   defaultScreenHeight: 768'
     - line: '|   defaultScreenWidthWeb: 960'
     - line: '|   defaultScreenHeightWeb: 600'
-    - line: '|   m_StereoRenderingPath: 0'
+    - line: '|   m_StereoRenderingPath: 2'
     - line: '|   m_ActiveColorSpace: 1'
     - line: '|   unsupportedMSAAFallback: 0'
     - line: '|   m_SpriteBatchMaxVertexCount: 65535'
@@ -168,13 +168,7 @@ MonoBehaviour:
     - line: '|   visionOSBundleVersion: 1.0'
     - line: '|   tvOSBundleVersion: 1.0'
     - line: '|   bundleVersion: 9.2.1'
-    - line: '|   preloadedAssets:'
-    - line: '|   - {fileID: 9030113687040111788, guid: 4b3de149e50ea0c4f8ad04c79b9f12ec,
-        type: 2}'
-    - line: '|   - {fileID: 4226981303226134123, guid: b716680a41c7a094fa3b7fb9a8024a67,
-        type: 2}'
-    - line: '|   - {fileID: 11400000, guid: 908d62378b8205449861e5838a18a596, type:
-        2}'
+    - line: '|   preloadedAssets: []'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
     - line: '|   m_HolographicPauseOnTrackingLoss: 1'
@@ -207,8 +201,8 @@ MonoBehaviour:
     - line: '|     tvOS: 0'
     - line: '|   overrideDefaultApplicationIdentifier: 1'
     - line: '|   AndroidBundleVersionCode: 1'
-    - line: '|   AndroidMinSdkVersion: 25'
-    - line: '|   AndroidTargetSdkVersion: 0'
+    - line: '|   AndroidMinSdkVersion: 32'
+    - line: '|   AndroidTargetSdkVersion: 34'
     - line: '|   AndroidPreferredInstallLocation: 0'
     - line: '|   AndroidPreferredDataLocation: 1'
     - line: '|   aotOptions: '
@@ -603,7 +597,7 @@ MonoBehaviour:
     - line: '|   - m_BuildTarget: LuminSupport'
     - line: '|     m_GraphicsJobs: 0'
     - line: '|   - m_BuildTarget: AndroidPlayer'
-    - line: '|     m_GraphicsJobs: 0'
+    - line: '|     m_GraphicsJobs: 1'
     - line: '|   - m_BuildTarget: WebGLSupport'
     - line: '|     m_GraphicsJobs: 0'
     - line: '|   m_BuildTargetGraphicsJobMode:'
@@ -611,6 +605,8 @@ MonoBehaviour:
     - line: '|     m_GraphicsJobMode: 0'
     - line: '|   - m_BuildTarget: XboxOnePlayer'
     - line: '|     m_GraphicsJobMode: 0'
+    - line: '|   - m_BuildTarget: AndroidPlayer'
+    - line: '|     m_GraphicsJobMode: 1'
     - line: '|   m_BuildTargetGraphicsAPIs:'
     - line: '|   - m_BuildTarget: AndroidPlayer'
     - line: '|     m_APIs: 15000000'
@@ -921,7 +917,7 @@ MonoBehaviour:
     - line: '|   webWasm2023: 0'
     - line: '|   webEnableSubmoduleStrippingCompatibility: 0'
     - line: '|   scriptingDefineSymbols:'
-    - line: '|     Android: USE_INPUT_SYSTEM_POSE_CONTROL;UNITY_POST_PROCESSING_STACK_V2;USE_STICK_CONTROL_THUMBSTICKS;APP_UI_EDITOR_ONLY'
+    - line: '|     Android: USE_INPUT_SYSTEM_POSE_CONTROL;UNITY_POST_PROCESSING_STACK_V2;USE_STICK_CONTROL_THUMBSTICKS;APP_UI_EDITOR_ONLY;OVR_DISABLE_HAND_PINCH_BUTTON_MAPPING'
     - line: '|     CloudRendering: UNITY_POST_PROCESSING_STACK_V2'
     - line: '|     EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2'
     - line: '|     GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2'
@@ -930,7 +926,7 @@ MonoBehaviour:
     - line: '|     PS4: UNITY_POST_PROCESSING_STACK_V2'
     - line: '|     PS5: UNITY_POST_PROCESSING_STACK_V2'
     - line: '|     Stadia: UNITY_POST_PROCESSING_STACK_V2'
-    - line: '|     Standalone: USE_INPUT_SYSTEM_POSE_CONTROL;UNITY_POST_PROCESSING_STACK_V2;USE_STICK_CONTROL_THUMBSTICKS'
+    - line: '|     Standalone: USE_INPUT_SYSTEM_POSE_CONTROL;UNITY_POST_PROCESSING_STACK_V2;USE_STICK_CONTROL_THUMBSTICKS;APP_UI_EDITOR_ONLY;OVR_DISABLE_HAND_PINCH_BUTTON_MAPPING'
     - line: '|     WebGL: UNITY_POST_PROCESSING_STACK_V2'
     - line: '|     Windows Store Apps: USE_INPUT_SYSTEM_POSE_CONTROL;UNITY_POST_PROCESSING_STACK_V2;USE_STICK_CONTROL_THUMBSTICKS'
     - line: '|     XboxOne: UNITY_POST_PROCESSING_STACK_V2'
@@ -1079,7 +1075,7 @@ MonoBehaviour:
         m_ExportAsGoogleAndroidProject: 0
         m_DebugSymbolLevel: 1
         m_DebugSymbolFormat: 5
-        m_CurrentDeploymentTargetId: __builtin__target_default
+        m_CurrentDeploymentTargetId: 1WMHH8223E0385
         m_BuildType: 2
         m_LinkTimeOptimization: 0
         m_BuildAppBundle: 0
