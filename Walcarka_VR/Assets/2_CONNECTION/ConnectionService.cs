@@ -25,7 +25,7 @@ public class ConnectionService : MonoBehaviour
         savedIP = PlayerPrefs.GetString("SavedRemoteIP", "localhost");
         if (ipInputField != null) ipInputField.text = savedIP;
 
-        StartCoroutine(GetDataLoop());
+        // StartCoroutine(GetDataLoop());
     }
 
     public void SaveNewIP()
