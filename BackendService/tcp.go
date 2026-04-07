@@ -5,12 +5,14 @@ import (
 	"bufio"
 	"crypto/rand"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
-	"regexp"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -53,24 +55,48 @@ func sendData(cfg *config.Config, conn net.Conn) {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		re := regexp.MustCompile(`"`)
-		line = re.ReplaceAllString(line, " ")
+		data := parseCsvData(line)
 
-		log.Println(line)
+		jsonBytes, err := json.Marshal(data)
+		if err != nil {
+			continue
+		}
 
-		data := []byte(line)
-		size := uint32(len(data))
-
+		size := uint32(len(jsonBytes))
 		sizeBuf := make([]byte, 4)
 		binary.BigEndian.PutUint32(sizeBuf, size)
 
 		conn.Write(sizeBuf)
-		conn.Write(data)
-
-		// log.Println(string(data))
+		conn.Write(jsonBytes)
 
 		time.Sleep(50 * time.Millisecond)
 	}
+}
+
+type RollerData struct {
+	Time     string  `json:"time"`
+	Velocity float64 `json:"velocity"`
+	Current  float64 `json:"current"`
+	Torque   float64 `json:"torque"`
+}
+
+func parseCsvData(line string) *RollerData {
+	line = strings.ReplaceAll(line, `"`, "")
+
+	parts := strings.Split(line, ",")
+	time := fmt.Sprintf("%s.%s", parts[1], parts[2])
+	vel, _ := strconv.ParseFloat(parts[3], 64)
+	cur, _ := strconv.ParseFloat(parts[4], 64)
+	tor, _ := strconv.ParseFloat(parts[6], 64)
+
+	data := RollerData{
+		Time:     time,
+		Velocity: vel,
+		Current:  cur,
+		Torque:   tor,
+	}
+
+	return &data
 }
 
 func connectionTest(conn net.Conn) {

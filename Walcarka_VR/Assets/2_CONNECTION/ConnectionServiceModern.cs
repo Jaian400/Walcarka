@@ -7,6 +7,15 @@ using System.Threading.Tasks;
 using UnityEngine;
 using TMPro;
 
+[System.Serializable]
+public class RollerData
+{
+    public string time;
+    public float velocity;
+    public float current;
+    public float torque;
+}
+
 public class ConnectionServiceModern : MonoBehaviour
 {
     [Header("Network Settings")]
@@ -20,6 +29,11 @@ public class ConnectionServiceModern : MonoBehaviour
     private TcpClient tcpClient;
     private NetworkStream tcpStream;
     private CancellationTokenSource cancellationTokenSource;
+
+    // ------------------------------------------------------------
+
+    public static event Action<RollerData> OnDataReceived;
+
 
     private void Start()
     {
@@ -155,12 +169,12 @@ public class ConnectionServiceModern : MonoBehaviour
                 byte[] dataBuffer = new byte[dataSize];
                 await ReadExactlyAsync(tcpStream, dataBuffer, (int)dataSize, token);
 
-                string line = System.Text.Encoding.UTF8.GetString(dataBuffer);
+                string jsonString = System.Text.Encoding.UTF8.GetString(dataBuffer);
+                RollerData incomingData = JsonUtility.FromJson<RollerData>(jsonString);
 
                 MainThreadDispatcher.RunOnMainThread(() =>
                 {
-                    Debug.Log($"Odebrano liniê: {line}");
-                    receviedDataText.text += line + "\n";
+                    OnDataReceived?.Invoke(incomingData);
                 });
             }
         }
