@@ -2,6 +2,7 @@
 *.png
 *.jpg
 *.pyc
+.venv
 
 # Unity build artifacts
 /[Bb]uild/

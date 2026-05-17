@@ -44,7 +44,7 @@ func handleTCPClient(cfg *config.Config, conn net.Conn) {
 }
 
 func sendData(cfg *config.Config, conn net.Conn) {
-	file, err := os.Open(cfg.StaticPath + "WalcarkaDuo_2024_12_05_13_56.csv")
+	file, err := os.Open(cfg.StaticPath + "WalcarkaDuo_2025_05_26_13_57.csv")
 	if err != nil {
 		log.Println("Error while opening a file:", err)
 		return

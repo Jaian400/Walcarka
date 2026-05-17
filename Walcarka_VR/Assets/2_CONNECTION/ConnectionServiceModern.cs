@@ -37,10 +37,10 @@ public class ConnectionServiceModern : MonoBehaviour
 
     private void Start()
     {
-        Connect();
+        // Connect();
     }
 
-    private async void Connect()
+    public async void Connect()
     {
         cancellationTokenSource = new CancellationTokenSource();
         connectionText.text = "Szukanie serwera...";

@@ -29,30 +29,37 @@ def generate_plots(file_path):
     # WYKRES 1: Parametry napędu (Prędkość, Prąd, Obciążenie, Moment)
     # ==========================================
     plt.figure(figsize=FIGSIZE)
+    plt.title('Prędkość w funkcji czasu', fontsize=16)
     sns.lineplot(data=df, x=df.index, y='Prędkość [m/min]', color='blue')
     plt.ylabel('Prędkość\n[m/min]')
+    plt.xlabel('Czas')
 
     plt.tight_layout()
     save_fig('01_predkosc.png')
     plt.close()
 
     plt.figure(figsize=FIGSIZE)
+    plt.title('Prąd w funkcji czasu', fontsize=16)
     sns.lineplot(data=df, x=df.index, y='Prąd - składowa rzeczywista [A]', color='red')
     plt.ylabel('Prąd [A]')
+    plt.xlabel('Czas')
 
     plt.tight_layout()
     save_fig('01_prad.png')
     plt.close()
 
     plt.figure(figsize=FIGSIZE)
+    plt.title('Obciążenie w funkcji czasu', fontsize=16)
     sns.lineplot(data=df, x=df.index, y='Obciążenie [%]', color='green')
     plt.ylabel('Obciążenie [%]')
+    plt.xlabel('Czas')
 
     plt.tight_layout()
     save_fig('01_obciazenie.png')
     plt.close()
 
     plt.figure(figsize=FIGSIZE)
+    plt.title('Moment obrotowy w funkcji czasu', fontsize=16)
     sns.lineplot(data=df, x=df.index, y='Moment obrotowy [kNm]', color='purple')
     plt.ylabel('Moment\n[kNm]')
     plt.xlabel('Czas')
