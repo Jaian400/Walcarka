@@ -34,6 +34,8 @@ public class ConnectionServiceModern : MonoBehaviour
 
     public static event Action<RollerData> OnDataReceived;
 
+    public string ServerIpAddress { get; private set; }
+
 
     private void Start()
     {
@@ -69,6 +71,7 @@ public class ConnectionServiceModern : MonoBehaviour
         if (serverEndpoint != null)
         {
             Debug.Log($"Znaleziono serwer! IP: {serverEndpoint.Address}, Port TCP: {serverEndpoint.Port}");
+            ServerIpAddress = serverEndpoint.Address.ToString();
 
             await StartTcpConnectionAsync(serverEndpoint.Address.ToString(), serverEndpoint.Port);
             return tcpClient != null && tcpClient.Connected;
@@ -170,6 +173,7 @@ public class ConnectionServiceModern : MonoBehaviour
                 await ReadExactlyAsync(tcpStream, dataBuffer, (int)dataSize, token);
 
                 string jsonString = System.Text.Encoding.UTF8.GetString(dataBuffer);
+                //receviedDataText.text += jsonString;
                 RollerData incomingData = JsonUtility.FromJson<RollerData>(jsonString);
 
                 MainThreadDispatcher.RunOnMainThread(() =>
@@ -194,6 +198,38 @@ public class ConnectionServiceModern : MonoBehaviour
             totalRead += read;
         }
         return totalRead;
+    }
+
+    public async Task<Texture2D> DownloadPlotImageAsync(string filename)
+    {
+        if (string.IsNullOrEmpty(ServerIpAddress))
+        {
+            Debug.LogError("Brak IP");
+            return null;
+        }
+
+        string url = $"http://{ServerIpAddress}:5000/api/plots?filename={filename}";
+
+        Debug.Log($"Pobieranie obrazu z: {url}");
+
+        using (UnityEngine.Networking.UnityWebRequest uwr = UnityEngine.Networking.UnityWebRequestTexture.GetTexture(url))
+        {
+            var operation = uwr.SendWebRequest();
+
+            while (!operation.isDone)
+            {
+                await Task.Yield();
+            }
+
+            if (uwr.result == UnityEngine.Networking.UnityWebRequest.Result.ConnectionError ||
+                uwr.result == UnityEngine.Networking.UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError($"B³¹d pobierania obrazu: {uwr.error}");
+                return null;
+            }
+
+            return UnityEngine.Networking.DownloadHandlerTexture.GetContent(uwr);
+        }
     }
 
     private void OnDestroy()

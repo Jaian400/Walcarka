@@ -9,6 +9,7 @@ os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
 @app.route('/api/plots', methods=['GET'])
 def get_image(filename):
+    filename = request.args.get('filename') 
     return send_from_directory(IMAGE_FOLDER, filename)
 
 @app.route('/upload')
@@ -24,4 +25,4 @@ def index():
     return render_template("index.html")
 
 if __name__=='__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)

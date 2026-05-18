@@ -13,7 +13,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func startTCPServer(cfg *config.Config) {
@@ -69,7 +68,7 @@ func sendData(cfg *config.Config, conn net.Conn) {
 		conn.Write(sizeBuf)
 		conn.Write(jsonBytes)
 
-		time.Sleep(50 * time.Millisecond)
+		// time.Sleep(50 * time.Millisecond)
 	}
 }
 

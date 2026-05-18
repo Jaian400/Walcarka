@@ -11,6 +11,8 @@ public class ChartManager : MonoBehaviour
     private void Start()
     {
         if (chart == null) chart = GetComponent<LineChart>();
+        chart.series[0].animation.enable = false;
+        chart.series[0].symbol.show = false;
         ConfigureAxes();
     }
 
@@ -18,6 +20,9 @@ public class ChartManager : MonoBehaviour
     {
         var xAxis = chart.GetChartComponent<XAxis>();
         var yAxis = chart.GetChartComponent<YAxis>();
+
+        xAxis.animation.show = false;
+        yAxis.animation.show = false;
 
         if (yAxis != null)
         {
@@ -77,6 +82,5 @@ public class ChartManager : MonoBehaviour
 
         chart.AddXAxisData(newData.time);
         chart.AddData(0, valueToChart);
-        chart.RefreshChart();
     }
 }
