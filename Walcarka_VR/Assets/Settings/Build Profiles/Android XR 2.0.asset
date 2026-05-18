@@ -36,7 +36,7 @@ MonoBehaviour:
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
     - line: '|   companyName: Jan Pawelec'
-    - line: '|   productName: Walcarla_VR'
+    - line: '|   productName: Walcarka_VR'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -167,7 +167,7 @@ MonoBehaviour:
     - line: '|   loadStoreDebugModeEnabled: 0'
     - line: '|   visionOSBundleVersion: 1.0'
     - line: '|   tvOSBundleVersion: 1.0'
-    - line: '|   bundleVersion: 9.2.1'
+    - line: '|   bundleVersion: 0.3.1'
     - line: '|   preloadedAssets:'
     - line: '|   - {fileID: 11400000, guid: 8dc05ff62507ba0498e46d37cf6856f0, type:
         2}'

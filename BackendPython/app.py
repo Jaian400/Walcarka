@@ -8,8 +8,9 @@ IMAGE_FOLDER = os.path.join(app.root_path, 'images')
 os.makedirs(IMAGE_FOLDER, exist_ok=True) 
 
 @app.route('/api/plots', methods=['GET'])
-def get_image(filename):
+def get_image():
     filename = request.args.get('filename') 
+
     return send_from_directory(IMAGE_FOLDER, filename)
 
 @app.route('/upload')

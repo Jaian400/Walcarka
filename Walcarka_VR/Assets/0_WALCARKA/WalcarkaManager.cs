@@ -20,10 +20,14 @@ public class WalcarkaManager : MonoBehaviour
 
     public bool powerOn = true;
 
+    [Header("NOWOSC EKSPERYMENT")]
+    [SerializeField] public float deformationScale = 1.0f;
+
     [Header("UI References")]
     [SerializeField] private Image powerButtonImage;
     [SerializeField] private TextMeshProUGUI rpmText;
     [SerializeField] private TextMeshProUGUI gapText;
+    [SerializeField] private TextMeshProUGUI deformationText;
 
     void Start()
     {
@@ -72,8 +76,6 @@ public class WalcarkaManager : MonoBehaviour
         {
             powerButtonImage.color = Color.red;
         }
-
-        
     }
 
     public void PowerSwitch()
@@ -101,5 +103,8 @@ public class WalcarkaManager : MonoBehaviour
 
         if (gapText != null)
             gapText.text = $"GAP: {rollerGap * 1000:F1} mm";
+
+        if (deformationText != null)
+            deformationText.text = $"SKALA DEFORMACJI: {deformationScale}";
     }
 }

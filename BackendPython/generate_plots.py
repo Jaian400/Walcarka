@@ -3,10 +3,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from app import IMAGE_FOLDER
 
-FIGSIZE = (12, 6)
+FIGSIZE = (15, 9)
+FONTSIZE = 30
+FONTSIZE_LABEL = 24
+FONTSIZE_TICK = 16
 
 def save_fig(filename):
-    plt.savefig(IMAGE_FOLDER + "/" + filename, dpi=2000)
+    plt.savefig(IMAGE_FOLDER + "/" + filename, dpi=100)
 
 def generate_plots(file_path):
     df = pd.read_csv(file_path, quotechar='"')
@@ -29,40 +32,44 @@ def generate_plots(file_path):
     # WYKRES 1: Parametry napędu (Prędkość, Prąd, Obciążenie, Moment)
     # ==========================================
     plt.figure(figsize=FIGSIZE)
-    plt.title('Prędkość w funkcji czasu', fontsize=16)
+    plt.title('Prędkość w funkcji czasu', fontsize=FONTSIZE)
     sns.lineplot(data=df, x=df.index, y='Prędkość [m/min]', color='blue')
-    plt.ylabel('Prędkość\n[m/min]')
-    plt.xlabel('Czas')
+    plt.ylabel('Prędkość\n[m/min]', fontsize=FONTSIZE_LABEL)
+    plt.xlabel('Czas', fontsize=FONTSIZE_LABEL)
+    plt.tick_params(axis='both', which='major', labelsize=FONTSIZE_TICK)
 
     plt.tight_layout()
     save_fig('01_predkosc.png')
     plt.close()
 
     plt.figure(figsize=FIGSIZE)
-    plt.title('Prąd w funkcji czasu', fontsize=16)
+    plt.title('Prąd w funkcji czasu', fontsize=FONTSIZE)
     sns.lineplot(data=df, x=df.index, y='Prąd - składowa rzeczywista [A]', color='red')
-    plt.ylabel('Prąd [A]')
-    plt.xlabel('Czas')
+    plt.ylabel('Prąd [A]', fontsize=FONTSIZE_LABEL)
+    plt.xlabel('Czas', fontsize=FONTSIZE_LABEL)
+    plt.tick_params(axis='both', which='major', labelsize=FONTSIZE_TICK)
 
     plt.tight_layout()
     save_fig('01_prad.png')
     plt.close()
 
     plt.figure(figsize=FIGSIZE)
-    plt.title('Obciążenie w funkcji czasu', fontsize=16)
+    plt.title('Obciążenie w funkcji czasu', fontsize=FONTSIZE)
     sns.lineplot(data=df, x=df.index, y='Obciążenie [%]', color='green')
-    plt.ylabel('Obciążenie [%]')
-    plt.xlabel('Czas')
+    plt.ylabel('Obciążenie [%]', fontsize=FONTSIZE_LABEL)
+    plt.xlabel('Czas', fontsize=FONTSIZE_LABEL)
+    plt.tick_params(axis='both', which='major', labelsize=FONTSIZE_TICK)
 
     plt.tight_layout()
     save_fig('01_obciazenie.png')
     plt.close()
 
     plt.figure(figsize=FIGSIZE)
-    plt.title('Moment obrotowy w funkcji czasu', fontsize=16)
+    plt.title('Moment obrotowy w funkcji czasu', fontsize=FONTSIZE)
     sns.lineplot(data=df, x=df.index, y='Moment obrotowy [kNm]', color='purple')
-    plt.ylabel('Moment\n[kNm]')
-    plt.xlabel('Czas')
+    plt.ylabel('Moment\n[kNm]', fontsize=FONTSIZE_LABEL)
+    plt.xlabel('Czas', fontsize=FONTSIZE_LABEL)
+    plt.tick_params(axis='both', which='major', labelsize=FONTSIZE_TICK)
 
     plt.tight_layout()
     save_fig('01_moment.png')
@@ -71,12 +78,13 @@ def generate_plots(file_path):
     # ==========================================
     # WYKRES 2: Siła nacisku (Prawa vs Lewa Strona)
     # ==========================================
-    plt.figure(figsize=(12, 6))
-    plt.title('Siła Nacisku - Strona Prawa vs Lewa', fontsize=16)
+    plt.figure(figsize=FIGSIZE)
+    plt.title('Siła Nacisku - Strona Prawa vs Lewa', fontsize=FONTSIZE)
     sns.lineplot(data=df, x=df.index, y='Siła nacisku - strona prawa [kN]', label='Prawa strona', color='orange')
     sns.lineplot(data=df, x=df.index, y='Siła nacisku - strona lewa [kN]', label='Lewa strona', color='teal', alpha=0.7)
-    plt.ylabel('Siła nacisku [kN]')
-    plt.xlabel('Czas')
+    plt.ylabel('Siła nacisku [kN]', fontsize=FONTSIZE_LABEL)
+    plt.xlabel('Czas', fontsize=FONTSIZE_LABEL)
+    plt.tick_params(axis='both', which='major', labelsize=FONTSIZE_TICK)
     plt.legend()
     plt.tight_layout()
     save_fig('02_sily_nacisku.png')
@@ -85,12 +93,13 @@ def generate_plots(file_path):
     # ==========================================
     # WYKRES 3: Nastawa pionowa walców (Szczelina)
     # ==========================================
-    plt.figure(figsize=(12, 6))
-    plt.title('Nastawa Pionowa Walca (Szczelina)', fontsize=16)
+    plt.figure(figsize=FIGSIZE)
+    plt.title('Nastawa Pionowa Walca (Szczelina)', fontsize=FONTSIZE)
     sns.lineplot(data=df, x=df.index, y='Nastawa pionowa walca - strona prawa [mm]', label='Prawa strona', color='darkred')
     sns.lineplot(data=df, x=df.index, y='Nastawa pionowa walca - strona lewa [mm]', label='Lewa strona', color='darkblue', linestyle='--')
-    plt.ylabel('Nastawa walca [mm]')
-    plt.xlabel('Czas')
+    plt.ylabel('Nastawa walca [mm]', fontsize=FONTSIZE_LABEL)
+    plt.xlabel('Czas', fontsize=FONTSIZE_LABEL)
+    plt.tick_params(axis='both', which='major', labelsize=FONTSIZE_TICK)
     plt.legend()
     plt.tight_layout()
     save_fig('03_nastawy_walcow.png')
@@ -99,12 +108,13 @@ def generate_plots(file_path):
     # ==========================================
     # WYKRES 4: Temperatura przed i za walcarką
     # ==========================================
-    plt.figure(figsize=(12, 6))
-    plt.title('Temperatura Wlewka Przed i Za Walcarką', fontsize=16)
+    plt.figure(figsize=FIGSIZE)
+    plt.title('Temperatura Wlewka Przed i Za Walcarką', fontsize=FONTSIZE)
     sns.lineplot(data=df, x=df.index, y='Temperatura wlewka przed walcarką [C]', label='Przed walcarką', color='crimson')
     sns.lineplot(data=df, x=df.index, y='Temperatura wlewka za walcarką [C]', label='Za walcarką', color='navy')
-    plt.ylabel('Temperatura [°C]')
-    plt.xlabel('Czas')
+    plt.ylabel('Temperatura [°C]', fontsize=FONTSIZE_LABEL)
+    plt.xlabel('Czas', fontsize=FONTSIZE_LABEL)
+    plt.tick_params(axis='both', which='major', labelsize=FONTSIZE_TICK)
     plt.legend()
     plt.tight_layout()
     save_fig('04_temperatury.png')

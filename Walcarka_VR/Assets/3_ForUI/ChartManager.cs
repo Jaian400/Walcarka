@@ -30,7 +30,7 @@ public class ChartManager : MonoBehaviour
 
             yAxis.splitNumber = 5; 
             yAxis.axisLabel.show = true;
-            yAxis.axisLabel.textStyle.fontSize = 24;
+            yAxis.axisLabel.textStyle.fontSize = 30;
 
             yAxis.axisName.name = GetAxisName();
         }
@@ -39,7 +39,7 @@ public class ChartManager : MonoBehaviour
         {
             xAxis.type = Axis.AxisType.Time;
             xAxis.axisLabel.show = true;
-            xAxis.axisLabel.textStyle.fontSize = 24;
+            xAxis.axisLabel.textStyle.fontSize = 30;
 
             xAxis.axisName.name = "Czas";
         }

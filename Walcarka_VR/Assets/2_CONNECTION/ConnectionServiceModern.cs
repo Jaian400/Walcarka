@@ -202,34 +202,23 @@ public class ConnectionServiceModern : MonoBehaviour
 
     public async Task<Texture2D> DownloadPlotImageAsync(string filename)
     {
-        if (string.IsNullOrEmpty(ServerIpAddress))
-        {
-            Debug.LogError("Brak IP");
-            return null;
-        }
-
         string url = $"http://{ServerIpAddress}:5000/api/plots?filename={filename}";
 
-        Debug.Log($"Pobieranie obrazu z: {url}");
-
-        using (UnityEngine.Networking.UnityWebRequest uwr = UnityEngine.Networking.UnityWebRequestTexture.GetTexture(url))
+        using (UnityEngine.Networking.UnityWebRequest uwr = UnityEngine.Networking.UnityWebRequest.Get(url))
         {
             var operation = uwr.SendWebRequest();
+            while (!operation.isDone) await Task.Yield();
 
-            while (!operation.isDone)
+            if (uwr.result == UnityEngine.Networking.UnityWebRequest.Result.Success)
             {
-                await Task.Yield();
+                Texture2D tex = new Texture2D(2, 2);
+                if (tex.LoadImage(uwr.downloadHandler.data))
+                {
+                    return tex;
+                }
             }
-
-            if (uwr.result == UnityEngine.Networking.UnityWebRequest.Result.ConnectionError ||
-                uwr.result == UnityEngine.Networking.UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError($"B³¹d pobierania obrazu: {uwr.error}");
-                return null;
-            }
-
-            return UnityEngine.Networking.DownloadHandlerTexture.GetContent(uwr);
         }
+        return null;
     }
 
     private void OnDestroy()

@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // Wymagane dla RawImage
+using UnityEngine.UI;
 using System.Threading.Tasks;
 
 public class PlotImageViewer : MonoBehaviour
@@ -11,20 +11,15 @@ public class PlotImageViewer : MonoBehaviour
 
     public async void LoadPlotFromServer()
     {
-        if (connectionService == null || plotDisplay == null) return;
-
         Texture2D newTexture = await connectionService.DownloadPlotImageAsync(defaultFilename);
 
         if (newTexture != null)
         {
-            if (plotDisplay.texture != null)
-            {
-                Destroy(plotDisplay.texture);
-            }
-
+            Texture2D oldTexture = plotDisplay.texture as Texture2D;
             plotDisplay.texture = newTexture;
 
-            plotDisplay.SetNativeSize();
+            if (oldTexture != null)
+                Destroy(oldTexture);
         }
     }
 }
