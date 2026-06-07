@@ -1,6 +1,8 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System;
 
 public class WalcarkaManager : MonoBehaviour
 {
@@ -22,6 +24,11 @@ public class WalcarkaManager : MonoBehaviour
 
     [Header("NOWOSC EKSPERYMENT")]
     [SerializeField] public float deformationScale = 1.0f;
+    public List<float> telemetricSpeeds = new List<float>();
+    public List<float> telemetricTimes = new List<float>();
+
+    private DateTime lastRecordTime;
+    private float accumulatedTelemetryTime = 0f;
 
     [Header("UI References")]
     [SerializeField] private Image powerButtonImage;
@@ -41,8 +48,54 @@ public class WalcarkaManager : MonoBehaviour
         }
 
         CalculateRollerRadius();
-
+        SetRollers();
         UpdateUI();
+    }
+
+    private void OnEnable()
+    {
+        ConnectionServiceModern.OnDataReceived += OnNetworkDataReceived;
+    }
+
+    private void OnDisable()
+    {
+        ConnectionServiceModern.OnDataReceived -= OnNetworkDataReceived;
+    }
+
+    private void OnNetworkDataReceived(RollerData data)
+    {
+        SaveTelemetricData(data.time, data.velocity);
+    }
+
+    public void SaveTelemetricData(string timeString, float originalVelocity)
+    {
+        if (DateTime.TryParse(timeString, out DateTime currentTime))
+        {
+            if (telemetricSpeeds.Count == 0)
+            {
+                accumulatedTelemetryTime = 0f;
+                lastRecordTime = currentTime;
+            }
+            else
+            {
+                float deltaSeconds = (float)(currentTime - lastRecordTime).TotalSeconds;
+
+                if (deltaSeconds < 0) 
+                    deltaSeconds = 0;
+
+                accumulatedTelemetryTime += deltaSeconds;
+                lastRecordTime = currentTime;
+            }
+
+            telemetricTimes.Add(accumulatedTelemetryTime);
+
+            float scaledVelocity = Mathf.Abs(originalVelocity) / deformationScale;
+            telemetricSpeeds.Add(scaledVelocity);
+        }
+        else
+        {
+            Debug.LogWarning($"Nie uda³o siê odczytaæ czasu: {timeString}");
+        }
     }
 
     void CalculateRollerRadius()
@@ -61,7 +114,17 @@ public class WalcarkaManager : MonoBehaviour
         }
     }
 
-    private void UpdateUI()
+    // ustawia walce w odleglosci RollerGap
+    public void SetRollers()
+    {
+        if (topRoller != null && bottomRoller != null)
+        {
+            topRoller.localPosition = new Vector3(topInitialPos.x, centerPoint.position.y + (rollerGap / 2) + rollerRadius, topInitialPos.z);
+            bottomRoller.localPosition = new Vector3(bottomInitialPos.x, centerPoint.position.y - (rollerGap / 2) - rollerRadius, bottomInitialPos.z);
+        }
+    }
+
+    public void UpdateUI()
     {
         if (powerButtonImage == null)
         {
@@ -71,11 +134,19 @@ public class WalcarkaManager : MonoBehaviour
         if (powerOn) 
         {
             powerButtonImage.color = Color.green;
+            rpmText.text = $"OMEGA: {rollerSpeed} rad/s";
         }
         else
         {
             powerButtonImage.color = Color.red;
+            rpmText.text = $"OMEGA: 0 rad/s";
         }
+
+        if (gapText != null)
+            gapText.text = $"GAP: {rollerGap * 1000:F1} mm";
+
+        if (deformationText != null)
+            deformationText.text = $"SKALA DEFORMACJI: {deformationScale}";
     }
 
     public void PowerSwitch()
@@ -88,23 +159,7 @@ public class WalcarkaManager : MonoBehaviour
     {
         if (powerOn)
         {
-            if (topRoller != null && bottomRoller != null)
-            {
-                topRoller.localPosition = new Vector3(topInitialPos.x, centerPoint.position.y + (rollerGap / 2) + rollerRadius, topInitialPos.z);
-                bottomRoller.localPosition = new Vector3(bottomInitialPos.x, centerPoint.position.y - (rollerGap / 2) - rollerRadius, bottomInitialPos.z);
-            }
+            SetRollers();
         }
-
-        if (rpmText != null)
-            if(powerOn)
-                rpmText.text = $"OMEGA: {rollerSpeed} rad/s";
-            else
-                rpmText.text = $"OMEGA: 0 rad/s";
-
-        if (gapText != null)
-            gapText.text = $"GAP: {rollerGap * 1000:F1} mm";
-
-        if (deformationText != null)
-            deformationText.text = $"SKALA DEFORMACJI: {deformationScale}";
     }
 }

@@ -24,6 +24,10 @@ public class WalcarkaProcessor : MonoBehaviour
 
     private Vector3 startScale;
     private Vector3 targetScale;
+       
+    // do odtwarzania z wys³anych danych
+    private int currentDataIndex = 0;
+    private float telemetryTimer = 0f;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -55,6 +59,9 @@ public class WalcarkaProcessor : MonoBehaviour
 
                 isProcessing = true;
                 isStabilizing = true;
+
+                currentDataIndex = 0;
+                telemetryTimer = 0f;
 
                 Debug.Log("STABILIZACJA: " + rolledObject.name);
             }
@@ -193,13 +200,49 @@ public class WalcarkaProcessor : MonoBehaviour
             return;
         }
 
+        // PROCES TRWA 
+
+        // aktualizujemy UI panelu
+        // manager.UpdateUI();
+
+        // stabilizacja przed procesem - feature nie fizyka
         if (isStabilizing)
         {
             Stabilize();
+            return;
         }
-        else
+
+        // aktualizacja predkosci
+        if (manager.telemetricSpeeds.Count > 0)
         {
-            Roll();
+            telemetryTimer += Time.fixedDeltaTime;
+
+            while (currentDataIndex < manager.telemetricSpeeds.Count - 1)
+            {
+                float nextSampleTime = manager.telemetricTimes[currentDataIndex + 1] * manager.deformationScale;
+
+                if (telemetryTimer >= nextSampleTime)
+                {
+                    currentDataIndex++;
+                    manager.rollerSpeed = manager.telemetricSpeeds[currentDataIndex];
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (currentDataIndex >= manager.telemetricSpeeds.Count - 1)
+            {
+                manager.rollerSpeed = 0f;
+                //manager.telemetricSpeeds.Clear();
+                //manager.telemetricTimes.Clear();
+            }
+
+            manager.UpdateUI(); 
         }
+
+        // ruch de facto
+        Roll();
     }
 }
