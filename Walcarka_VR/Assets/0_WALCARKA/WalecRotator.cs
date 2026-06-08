@@ -6,7 +6,7 @@ public class WalecRotator : MonoBehaviour
     [SerializeField] bool rotateClockwise = true;
     private WalcarkaManager manager;
     private float directionMultiplier = 1f;
-    private float speed = 60f;
+    //private float speed = 60f;
 
     void Start()
     {
@@ -27,7 +27,8 @@ public class WalecRotator : MonoBehaviour
     {
         if (manager != null && manager.powerOn)
         {
-            float omega = manager.rollerSpeed;
+            // float omega = manager.rollerSpeed;
+            float omega = manager.rollerSpeed * manager.deformationScale;
             float degreesPerSecond = omega * Mathf.Rad2Deg;
 
             transform.Rotate(Vector3.forward * degreesPerSecond * directionMultiplier * Time.deltaTime);

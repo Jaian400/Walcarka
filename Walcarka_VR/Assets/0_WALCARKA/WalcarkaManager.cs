@@ -9,8 +9,9 @@ public class WalcarkaManager : MonoBehaviour
     [Header("Prêdkoœæ obrotu wa³ów (OMEGA)")]
     public float rollerSpeed = 100f;
 
+    private float initialRollerGap = 0.02f;
     [Header("Rozstaw wa³ów (w metrach)")]
-    [Range(0.01f, 0.2f)] public float rollerGap = 0.05f; 
+    public float rollerGap = 0.05f; 
     [SerializeField] Transform topRoller;
     [SerializeField] Transform bottomRoller;
     [SerializeField] Transform centerPoint;
@@ -47,8 +48,9 @@ public class WalcarkaManager : MonoBehaviour
             bottomInitialPos = bottomRoller.localPosition;
         }
 
+        SetDeformationScale(2.0f);
         CalculateRollerRadius();
-        SetRollers();
+        SetRollers(initialRollerGap);
         UpdateUI();
     }
 
@@ -89,12 +91,34 @@ public class WalcarkaManager : MonoBehaviour
 
             telemetricTimes.Add(accumulatedTelemetryTime);
 
-            float scaledVelocity = Mathf.Abs(originalVelocity) / deformationScale;
-            telemetricSpeeds.Add(scaledVelocity);
+            float vel = Mathf.Abs(originalVelocity) / 60f;
+            // zmiana! bierzemy deformacje juz w procesie
+            // vel = Mathf.Abs(vel) / deformationScale; 
+            telemetricSpeeds.Add(vel);
         }
         else
         {
             Debug.LogWarning($"Nie uda³o siê odczytaæ czasu: {timeString}");
+        }
+    } 
+
+    public void SetDeformationScale(float scale)
+    {
+        deformationScale = scale;
+        SetRollers(initialRollerGap);
+        UpdateUI();
+    }
+
+    public void DeformationScaleUp()
+    {
+        SetDeformationScale(deformationScale + 0.5f);
+    }
+
+    public void DeformationScaleDown()
+    {
+        if (deformationScale > 1)
+        {
+            SetDeformationScale(deformationScale - 0.5f);
         }
     }
 
@@ -115,8 +139,9 @@ public class WalcarkaManager : MonoBehaviour
     }
 
     // ustawia walce w odleglosci RollerGap
-    public void SetRollers()
+    public void SetRollers(float inputRollerGap)
     {
+        this.rollerGap = inputRollerGap * deformationScale;
         if (topRoller != null && bottomRoller != null)
         {
             topRoller.localPosition = new Vector3(topInitialPos.x, centerPoint.position.y + (rollerGap / 2) + rollerRadius, topInitialPos.z);
@@ -159,7 +184,6 @@ public class WalcarkaManager : MonoBehaviour
     {
         if (powerOn)
         {
-            SetRollers();
         }
     }
 }

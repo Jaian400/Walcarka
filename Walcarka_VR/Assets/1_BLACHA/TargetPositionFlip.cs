@@ -13,6 +13,7 @@ public class TargetPositionFlip : MonoBehaviour
 
     void Update()
     {
+        dist = targetDist / transform.parent.localScale.y;
         float worldYAbove = transform.parent.TransformPoint(0, dist, 0).y;
         float worldYBelow = transform.parent.TransformPoint(0, -dist, 0).y;
 

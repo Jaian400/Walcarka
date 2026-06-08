@@ -83,7 +83,9 @@ public class WalcarkaProcessor : MonoBehaviour
         float L2 = L1;
 
         float T2 = manager.rollerGap;
-        if (T1 <= T2)
+        float tolerance = 0.001f; // mm tolerancji
+        Debug.Log($"T1 = {T1}, T2 = {T2}");
+        if (T1 <= T2 + tolerance)
         {
             Debug.Log("MA£A GRUBOŒÆ: " + rolledObject.name);
             End();
@@ -200,8 +202,6 @@ public class WalcarkaProcessor : MonoBehaviour
             return;
         }
 
-        // PROCES TRWA 
-
         // aktualizujemy UI panelu
         // manager.UpdateUI();
 
@@ -212,6 +212,8 @@ public class WalcarkaProcessor : MonoBehaviour
             return;
         }
 
+        // PROCES TRWA 
+
         // aktualizacja predkosci
         if (manager.telemetricSpeeds.Count > 0)
         {
@@ -219,12 +221,14 @@ public class WalcarkaProcessor : MonoBehaviour
 
             while (currentDataIndex < manager.telemetricSpeeds.Count - 1)
             {
-                float nextSampleTime = manager.telemetricTimes[currentDataIndex + 1] * manager.deformationScale;
+                //float nextSampleTime = manager.telemetricTimes[currentDataIndex + 1] / manager.deformationScale;
+                float nextSampleTime = manager.telemetricTimes[currentDataIndex + 1];
 
                 if (telemetryTimer >= nextSampleTime)
                 {
                     currentDataIndex++;
-                    manager.rollerSpeed = manager.telemetricSpeeds[currentDataIndex];
+                    // manager.rollerSpeed = manager.telemetricSpeeds[currentDataIndex];
+                    manager.rollerSpeed = manager.telemetricSpeeds[currentDataIndex] * manager.deformationScale;
                 }
                 else
                 {
