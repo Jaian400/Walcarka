@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from app import IMAGE_FOLDER
+from config import IMAGE_FOLDER
 
 FIGSIZE = (15, 9)
 FONTSIZE = 30

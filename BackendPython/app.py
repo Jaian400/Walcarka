@@ -1,17 +1,15 @@
 from flask import Flask, jsonify, send_from_directory, url_for, request, render_template
 import os
 import generate_plots
+import config
 
 app = Flask(__name__)
-
-IMAGE_FOLDER = os.path.join(app.root_path, 'images')
-os.makedirs(IMAGE_FOLDER, exist_ok=True) 
 
 @app.route('/api/plots', methods=['GET'])
 def get_image():
     filename = request.args.get('filename') 
 
-    return send_from_directory(IMAGE_FOLDER, filename)
+    return send_from_directory(config.IMAGE_FOLDER, filename)
 
 @app.route('/upload')
 def upload():
