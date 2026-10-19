@@ -1,0 +1,4 @@
+Timestamp;ImageName;TotalTime_ms;FramesInBg;AvgFPS;AllocatedMemory_KB
+2026-10-19 14:41:00.698;01_predkosc.png;180;11;60.8;72.00
+2026-10-19 14:41:00.724;01_prad.png;204;11;53.9;140.00
+2026-10-19 14:41:00.746;01_moment.png;225;11;48.8;228.00
