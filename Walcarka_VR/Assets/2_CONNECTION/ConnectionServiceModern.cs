@@ -14,6 +14,18 @@ public class RollerData
     public float velocity;
     public float current;
     public float torque;
+    public float load = float.NaN;
+    public float forceRight = float.NaN;
+    public float forceLeft = float.NaN;
+    public float positionRight = float.NaN;
+    public float positionLeft = float.NaN;
+    public float temperatureIn = float.NaN;
+    public float temperatureOut = float.NaN;
+
+    public bool HasAdditionalData =>
+        !float.IsNaN(load) && !float.IsNaN(forceRight) && !float.IsNaN(forceLeft) &&
+        !float.IsNaN(positionRight) && !float.IsNaN(positionLeft) &&
+        !float.IsNaN(temperatureIn) && !float.IsNaN(temperatureOut);
 }
 
 public class ConnectionServiceModern : MonoBehaviour
@@ -30,7 +42,6 @@ public class ConnectionServiceModern : MonoBehaviour
     private NetworkStream tcpStream;
     private CancellationTokenSource cancellationTokenSource;
 
-    // ------------------------------------------------------------
 
     public static event Action<RollerData> OnDataReceived;
 
@@ -39,7 +50,6 @@ public class ConnectionServiceModern : MonoBehaviour
 
     private void Start()
     {
-        // Connect();
     }
 
     public async void Connect()
@@ -173,7 +183,6 @@ public class ConnectionServiceModern : MonoBehaviour
                 await ReadExactlyAsync(tcpStream, dataBuffer, (int)dataSize, token);
 
                 string jsonString = System.Text.Encoding.UTF8.GetString(dataBuffer);
-                //receviedDataText.text += jsonString;
                 RollerData incomingData = JsonUtility.FromJson<RollerData>(jsonString);
 
                 MainThreadDispatcher.RunOnMainThread(() =>

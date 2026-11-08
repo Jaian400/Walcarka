@@ -68,15 +68,21 @@ func sendData(cfg *config.Config, conn net.Conn) {
 		conn.Write(sizeBuf)
 		conn.Write(jsonBytes)
 
-		// time.Sleep(50 * time.Millisecond)
 	}
 }
 
 type RollerData struct {
-	Time     string  `json:"time"`
-	Velocity float64 `json:"velocity"`
-	Current  float64 `json:"current"`
-	Torque   float64 `json:"torque"`
+	Time           string  `json:"time"`
+	Velocity       float64 `json:"velocity"`
+	Current        float64 `json:"current"`
+	Torque         float64 `json:"torque"`
+	Load           float64 `json:"load"`
+	ForceRight     float64 `json:"forceRight"`
+	ForceLeft      float64 `json:"forceLeft"`
+	PositionRight  float64 `json:"positionRight"`
+	PositionLeft   float64 `json:"positionLeft"`
+	TemperatureIn  float64 `json:"temperatureIn"`
+	TemperatureOut float64 `json:"temperatureOut"`
 }
 
 func parseCsvData(line string) *RollerData {
@@ -87,12 +93,26 @@ func parseCsvData(line string) *RollerData {
 	vel, _ := strconv.ParseFloat(parts[3], 64)
 	cur, _ := strconv.ParseFloat(parts[4], 64)
 	tor, _ := strconv.ParseFloat(parts[6], 64)
+	load, _ := strconv.ParseFloat(parts[5], 64)
+	forceRight, _ := strconv.ParseFloat(parts[7], 64)
+	forceLeft, _ := strconv.ParseFloat(parts[8], 64)
+	positionRight, _ := strconv.ParseFloat(parts[9], 64)
+	positionLeft, _ := strconv.ParseFloat(parts[10], 64)
+	temperatureIn, _ := strconv.ParseFloat(parts[11], 64)
+	temperatureOut, _ := strconv.ParseFloat(parts[12], 64)
 
 	data := RollerData{
-		Time:     time,
-		Velocity: vel,
-		Current:  cur,
-		Torque:   tor,
+		Time:           time,
+		Velocity:       vel,
+		Current:        cur,
+		Torque:         tor,
+		Load:           load,
+		ForceRight:     forceRight,
+		ForceLeft:      forceLeft,
+		PositionRight:  positionRight,
+		PositionLeft:   positionLeft,
+		TemperatureIn:  temperatureIn,
+		TemperatureOut: temperatureOut,
 	}
 
 	return &data

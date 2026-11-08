@@ -1,0 +1,41 @@
+PANELE WIZUALIZACJI WALCARKI
+
+Łącznie: 12 stron, po 6 na każdym panelu.
+Lewa strona pokazuje proces walcowania, a prawa — pracę napędu i zależności między sygnałami.
+
+LEWY PANEL — PROCES WALCOWANIA
+
+Nr | Nazwa                       | Forma          | Prezentowane dane
+---+-----------------------------+----------------+---------------------------------------------------
+1  | Przegląd stanowiska         | 8 kafelków     | Najnowsze wartości liczbowe z jednostkami.
+2  | Siły nacisku                | Dwie linie     | Siła po prawej i lewej stronie [kN] w czasie.
+3  | Porównanie sił nacisku      | Dwa słupki     | Najnowsze siły po obu stronach, na wspólnej skali.
+4  | Nastawy pionowe walca       | Dwie linie     | Nastawa prawej i lewej strony [mm] w czasie.
+5  | Różnica nastaw walca        | Jedna linia    | Nastawa lewa minus prawa [mm] w czasie.
+6  | Temperatura wlewka          | Dwie linie     | Temperatura przed i za walcarką [°C] w czasie.
+
+Kafelki przeglądu: prędkość, prąd, moment obrotowy, całkowita siła nacisku,
+różnica nastaw walca, temperatura przed walcarką, temperatura za walcarką,
+obciążenie napędu. Nad nimi znajduje się informacja „Data from HH:mm:ss.fff”
+z czasem najstarszej przechowywanej próbki. Obecnie nie zawiera daty kalendarzowej.
+
+PRAWY PANEL — NAPĘD I ANALIZA
+
+Nr | Nazwa                       | Forma          | Prezentowane dane
+---+-----------------------------+----------------+---------------------------------------------------
+1  | Prędkość                    | Jedna linia    | Prędkość walcowania [m/min] w czasie.
+2  | Prąd                        | Jedna linia    | Składowa rzeczywista prądu silnika [A] w czasie.
+3  | Moment obrotowy             | Jedna linia    | Moment obrotowy [kNm] w czasie.
+4  | Obciążenie napędu           | Jedna linia    | Obciążenie [%] w czasie, z zachowaniem znaku.
+5  | Stan ruchu walcarki         | Linia schodkowa| -1: ruch ujemny, 0: blisko zera, +1: ruch dodatni.
+6  | Zależność momentu od prądu  | Wykres punktowy| Oś X: prąd [A]; oś Y: moment [kNm].
+
+ZASADA DZIAŁANIA
+
+- Obie strony korzystają ze wspólnego bufora danych i mają niezależne strzałki nawigacji.
+- Dane są zbierane także wtedy, gdy dana strona nie jest wyświetlana.
+- Po otwarciu wykres odtwarza dostępną historię; kafelki i słupki pokazują najnowszą próbkę.
+- Przerwy w pomiarach przerywają linię wykresu, a brak danych nie jest zastępowany zerem.
+- Domyślne strony: przegląd stanowiska po lewej i prędkość po prawej.
+
+Podział umożliwia porównanie procesu z reakcją napędu, np. siły nacisku z momentem obrotowym.
