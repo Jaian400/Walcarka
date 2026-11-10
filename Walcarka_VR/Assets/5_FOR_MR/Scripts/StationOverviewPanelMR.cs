@@ -100,7 +100,7 @@ public sealed class StationOverviewPanelMR : MonoBehaviour
     {
         if (label == null) return;
         label.text = sample.HasValue && ChartManagerMR.TryGetMetricValue(sample.Value, metric, out float value)
-            ? value.ToString("0.###", CultureInfo.CurrentCulture) + " " + ChartManagerMR.GetMetricUnit(metric)
+            ? value.ToString("0.###", CultureInfo.CurrentCulture)
             : "No data";
     }
 

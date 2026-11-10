@@ -472,7 +472,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2521830768148195979, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_text
-      value: "Pr\u0105d"
+      value: "Pr\u0105d [A]"
       objectReference: {fileID: 0}
     - target: {fileID: 4340350369743532980, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_LocalPosition.x
@@ -549,7 +549,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2521830768148195979, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_text
-      value: "R\xF3\u017Cnica nastaw walca"
+      value: "R\xF3\u017Cnica nastaw walca [mm]"
       objectReference: {fileID: 0}
     - target: {fileID: 4340350369743532980, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_LocalPosition.x
@@ -626,7 +626,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2521830768148195979, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_text
-      value: Moment obrotowy
+      value: "Moment obrotowy [kNm]"
       objectReference: {fileID: 0}
     - target: {fileID: 4340350369743532980, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_LocalPosition.x
@@ -703,7 +703,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2521830768148195979, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_text
-      value: "Pr\u0119dko\u015B\u0107"
+      value: "Pr\u0119dko\u015B\u0107 [m/min]"
       objectReference: {fileID: 0}
     - target: {fileID: 4340350369743532980, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_LocalPosition.x
@@ -780,7 +780,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2521830768148195979, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_text
-      value: Temperatura przed
+      value: "Temperatura przed [\u00B0C]"
       objectReference: {fileID: 0}
     - target: {fileID: 4340350369743532980, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_LocalPosition.x
@@ -857,7 +857,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2521830768148195979, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_text
-      value: "Obci\u0105\u017Cenie nap\u0119du"
+      value: "Obci\u0105\u017Cenie nap\u0119du [%]"
       objectReference: {fileID: 0}
     - target: {fileID: 4340350369743532980, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_LocalPosition.x
@@ -934,7 +934,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2521830768148195979, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_text
-      value: Temperatura za
+      value: "Temperatura za [\u00B0C]"
       objectReference: {fileID: 0}
     - target: {fileID: 4340350369743532980, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1011,7 +1011,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2521830768148195979, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_text
-      value: "Ca\u0142kowita si\u0142a nacisku"
+      value: "Ca\u0142kowita si\u0142a nacisku [kN]"
       objectReference: {fileID: 0}
     - target: {fileID: 4340350369743532980, guid: 0893b88980b63b148996797f35bd2873, type: 3}
       propertyPath: m_LocalPosition.x
