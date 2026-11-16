@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 4638398163006033529}
   - component: {fileID: 4507347555181486712}
   - component: {fileID: 4660184246026005690}
+  - component: {fileID: 8125463009012345678}
   m_Layer: 0
   m_Name: ArrowLeft
   m_TagString: Untagged
@@ -302,12 +303,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6151d3609ac944ef98f954744c05cc50, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::ArrowClickFeedback
   visualTarget: {fileID: 3073080949049728440}
   arrowRenderer: {fileID: 1310332254108331164}
   pressedScale: 0.94
-  lightenAmount: 0.3
+  lightenAmount: 0
   duration: 0.2
 --- !u!114 &4638398163006033529
 MonoBehaviour:
@@ -319,7 +320,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a2140d2b457bea84881488302059889b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Oculus.Interaction::Oculus.Interaction.Surfaces.ColliderSurface
   _collider: {fileID: 2779057871262651268}
 --- !u!114 &4507347555181486712
@@ -332,7 +333,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bb86ba9d4c5126e48bfef9b0c9550e9d, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Oculus.Interaction::Oculus.Interaction.RayInteractable
   _interactorFilters: []
   _maxInteractors: -1
@@ -353,7 +354,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1464721f2283eb14e94a33e812b47be4, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Oculus.Interaction::Oculus.Interaction.InteractableUnityEventWrapper
   _interactableView: {fileID: 4507347555181486712}
   _whenHover:
@@ -374,7 +375,19 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 8125463009012345678}
+        m_TargetAssemblyTypeName: ConnectionArrow, Assembly-CSharp
+        m_MethodName: TogglePanel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
           m_BoolArgument: 0
         m_CallState: 2
   _whenUnselect:
@@ -425,3 +438,22 @@ Transform:
   - {fileID: 5596927585415461056}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8125463009012345678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5897241646800286736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1c8a029f54a4aeeb71e4a842b2fdc19, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ConnectionArrow
+  connectionService: {fileID: 0}
+  arrowRenderer: {fileID: 1310332254108331164}
+  disconnectedMaterial: {fileID: 2100000, guid: 4a8b98e624d57c74fae944f9b464de18, type: 2}
+  connectingMaterial: {fileID: 2100000, guid: a47aaa4114afe074dbfb8f244a9989dc, type: 2}
+  connectedMaterial: {fileID: 2100000, guid: 87e63bd8fb2abe64bba63f7f94a4501e, type: 2}
+  panel: {fileID: 0}
+  hidePanelOnStart: 1

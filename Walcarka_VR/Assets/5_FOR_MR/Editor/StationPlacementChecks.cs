@@ -156,10 +156,10 @@ public static class StationPlacementChecks
         Set(placer, "unityFocused", false);
         Invoke(placer, "ApplyInputFocus", true, true);
         Invoke(placer, "ProcessPlacementShortcuts", true, false);
-        Require(placer.State == StationQrPlacer.PlacementState.Placing && placer.UsingXrFocus && !placer.UnityFocused,
+        Require(placer.State == StationQrPlacer.PlacementState.Placing && Get<bool>(placer, "focused") && !Get<bool>(placer, "unityFocused"),
             "Link accepts X with headset input focus while the Game view is unfocused");
         Input(placer);
-        Require(preview.gameObject.activeSelf && placer.LastShortcut.Contains("X received"), "Link X is recorded and shows the preview");
+        Require(preview.gameObject.activeSelf, "Link X shows the preview");
         placer.CancelPlacement();
         Require(placer.HasPlaced && Vector3.Distance(station.position, confirmed.position) < 0.00001f,
             "Cancelling Link repositioning restores the confirmed pose");

@@ -41,7 +41,7 @@ public sealed class ArrowClickFeedback : MonoBehaviour
     private void CaptureColor()
     {
         hasColor = false;
-        if (activeRenderer == null || activeRenderer.sharedMaterial == null) return;
+        if (lightenAmount <= 0f || activeRenderer == null || activeRenderer.sharedMaterial == null) return;
 
         var material = activeRenderer.sharedMaterial;
         colorProperty = material.HasProperty(BaseColorId) ? BaseColorId : ColorId;

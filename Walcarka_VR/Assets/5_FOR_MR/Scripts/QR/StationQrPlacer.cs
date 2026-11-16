@@ -38,12 +38,6 @@ public sealed class StationQrPlacer : MonoBehaviour
     public PlacementMode ActivePlacementMode { get; private set; } = PlacementMode.Auto;
     public bool HasPlaced => hasConfirmedPose && State == PlacementState.Placed;
     public string Status { get; private set; }
-    public int UpdateCount { get; private set; }
-    public bool InputPaused => paused;
-    public bool InputFocused => focused;
-    public bool UnityFocused => unityFocused;
-    public bool UsingXrFocus { get; private set; }
-    public string LastShortcut { get; private set; } = "No X/Y press received.";
 
     private const string ManualReadyMessage = "Ręczne umieszczanie stacji.";
     private readonly List<MRUKTrackable> trackables = new List<MRUKTrackable>();
@@ -303,7 +297,6 @@ public sealed class StationQrPlacer : MonoBehaviour
 
     private void Update()
     {
-        UpdateCount++;
         RefreshInputFocus();
         if (ProcessPlacementShortcuts(
                 OVRInput.GetDown(OVRInput.RawButton.X, OVRInput.Controller.LTouch),
@@ -328,12 +321,6 @@ public sealed class StationQrPlacer : MonoBehaviour
 
     private bool ProcessPlacementShortcuts(bool manualDown, bool qrDown)
     {
-        if (manualDown || qrDown)
-        {
-            string button = manualDown ? "X" : "Y";
-            LastShortcut = $"{button} received: state={State}, paused={paused}, inputFocus={focused}, UnityFocus={unityFocused}, XR focus source={UsingXrFocus}.";
-            Debug.Log("[StationQrPlacer] " + LastShortcut, this);
-        }
         if (paused || !focused) return false;
         if (manualDown)
         {
@@ -575,7 +562,6 @@ public sealed class StationQrPlacer : MonoBehaviour
         if (Status == message) return;
         Status = message;
         if (warning) Debug.LogWarning("[StationQrPlacer] " + message, this);
-        else Debug.Log("[StationQrPlacer] " + message, this);
     }
 
     private void OnApplicationPause(bool value)
@@ -603,7 +589,6 @@ public sealed class StationQrPlacer : MonoBehaviour
 
     private void ApplyInputFocus(bool xrAvailable, bool xrFocused)
     {
-        UsingXrFocus = xrAvailable;
         bool next = SelectInputFocus(unityFocused, xrAvailable, xrFocused);
         if (focused && !next) InterruptManualPlacement();
         focused = next;

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
+public enum MRConnectionState { Disconnected, Connecting, Connected, DatasetReceived }
+
 [DisallowMultipleComponent]
 public sealed class ConnectionServiceMR : MonoBehaviour
 {
@@ -23,6 +25,8 @@ public sealed class ConnectionServiceMR : MonoBehaviour
     public TextMeshProUGUI receviedDataText;
 
     public event Action<RollerData> OnDataReceived;
+    public event Action<MRConnectionState> OnConnectionStateChanged;
+    public MRConnectionState State { get; private set; }
     public string ServerIpAddress { get; private set; }
     public bool IsConnecting { get; private set; }
     public bool IsConnected { get; private set; }
@@ -44,7 +48,7 @@ public sealed class ConnectionServiceMR : MonoBehaviour
 
         StopSession();
         cancellation = new CancellationTokenSource();
-        IsConnecting = true;
+        SetConnectionState(MRConnectionState.Connecting);
         SetStatus("Szukanie serwera...", Color.white);
         _ = RunSessionAsync(generation, cancellation.Token);
     }
@@ -60,6 +64,8 @@ public sealed class ConnectionServiceMR : MonoBehaviour
         TcpClient client = null;
         string finalStatus = "Rozłączono z serwerem";
         Color finalColor = Color.white;
+        bool datasetReceived = false;
+        int validSamples = 0;
         try
         {
             IPEndPoint endpoint = await DiscoverServerAsync(token);
@@ -90,8 +96,7 @@ public sealed class ConnectionServiceMR : MonoBehaviour
 
             if (!IsCurrent(session, token)) return;
             ServerIpAddress = endpoint.Address.ToString();
-            IsConnecting = false;
-            IsConnected = true;
+            SetConnectionState(MRConnectionState.Connected);
             SetStatus($"Połączono z: {endpoint}", Color.green);
 
             using (token.Register(client.Close))
@@ -100,7 +105,19 @@ public sealed class ConnectionServiceMR : MonoBehaviour
                 int frameLimit = Math.Max(1, maxMessageBytes);
                 int pendingLimit = Math.Max(1, maxPendingSamples);
                 await Task.Run(() => MRConnectionProtocol.ReceiveFramesAsync(stream, frameLimit, pendingLimit,
-                    json => DeliverSample(session, token, json), token), token);
+                    json => { if (DeliverSample(session, token, json)) validSamples++; }, token), token);
+
+                // Wait for queued sample callbacks before deciding whether the transfer was usable.
+                var delivered = new TaskCompletionSource<bool>();
+                using (token.Register(() => delivered.TrySetCanceled()))
+                {
+                    MainThreadDispatcher.RunOnMainThread(() => delivered.TrySetResult(true));
+                    await delivered.Task;
+                }
+                token.ThrowIfCancellationRequested();
+                datasetReceived = validSamples > 0;
+                finalStatus = datasetReceived ? "Dane odebrane" : "Nie odebrano poprawnych danych";
+                finalColor = datasetReceived ? Color.green : Color.red;
             }
         }
         catch (Exception) when (token.IsCancellationRequested)
@@ -121,8 +138,7 @@ public sealed class ConnectionServiceMR : MonoBehaviour
             if (session == generation)
             {
                 tcpClient = null;
-                IsConnecting = false;
-                IsConnected = false;
+                SetConnectionState(datasetReceived ? MRConnectionState.DatasetReceived : MRConnectionState.Disconnected);
                 cancellation?.Dispose();
                 cancellation = null;
                 if (!destroyed && this != null && isActiveAndEnabled && !token.IsCancellationRequested)
@@ -164,9 +180,9 @@ public sealed class ConnectionServiceMR : MonoBehaviour
         }
     }
 
-    private void DeliverSample(int session, CancellationToken token, string json)
+    private bool DeliverSample(int session, CancellationToken token, string json)
     {
-        if (!IsCurrent(session, token)) return;
+        if (!IsCurrent(session, token)) return false;
         RollerData sample;
         try
         {
@@ -178,17 +194,18 @@ public sealed class ConnectionServiceMR : MonoBehaviour
         catch (Exception exception)
         {
             Debug.LogWarning($"[{nameof(ConnectionServiceMR)}] Skipped invalid sample: {exception.Message}", this);
-            return;
+            return false;
         }
 
         if (receviedDataText != null) receviedDataText.text = json;
         Action<RollerData> listeners = OnDataReceived;
-        if (listeners == null) return;
+        if (listeners == null) return true;
         foreach (Action<RollerData> listener in listeners.GetInvocationList())
         {
             try { listener(sample); }
             catch (Exception exception) { Debug.LogException(exception, this); }
         }
+        return true;
     }
 
     private bool IsCurrent(int session, CancellationToken token)
@@ -206,8 +223,22 @@ public sealed class ConnectionServiceMR : MonoBehaviour
         tcpClient?.Close();
         tcpClient = null;
         previousCancellation?.Dispose();
-        IsConnecting = false;
-        IsConnected = false;
+        SetConnectionState(MRConnectionState.Disconnected);
+    }
+
+    private void SetConnectionState(MRConnectionState state)
+    {
+        IsConnecting = state == MRConnectionState.Connecting;
+        IsConnected = state == MRConnectionState.Connected;
+        if (State == state) return;
+        State = state;
+        var listeners = OnConnectionStateChanged;
+        if (listeners == null) return;
+        foreach (Action<MRConnectionState> listener in listeners.GetInvocationList())
+        {
+            try { listener(state); }
+            catch (Exception exception) { Debug.LogException(exception, this); }
+        }
     }
 
     private void SetStatus(string text, Color color)
