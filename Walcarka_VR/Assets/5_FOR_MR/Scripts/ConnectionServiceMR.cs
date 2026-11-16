@@ -17,6 +17,7 @@ public sealed class ConnectionServiceMR : MonoBehaviour
     public int discoveryTimeoutMs = 5000;
     [Min(1)] public int tcpConnectionTimeoutMs = 5000;
     [Min(1)] public int maxMessageBytes = 65536;
+    [Min(1)] public int maxPendingSamples = 128;
 
     public TextMeshProUGUI connectionText;
     public TextMeshProUGUI receviedDataText;
@@ -30,6 +31,11 @@ public sealed class ConnectionServiceMR : MonoBehaviour
     private CancellationTokenSource cancellation;
     private int generation;
     private bool destroyed;
+
+    void Start()
+    {
+        Connect();
+    }
 
     public void Connect()
     {
@@ -91,17 +97,10 @@ public sealed class ConnectionServiceMR : MonoBehaviour
             using (token.Register(client.Close))
             using (NetworkStream stream = client.GetStream())
             {
-                var header = new byte[4];
-                while (await MRConnectionProtocol.ReadExactlyAsync(stream, header, token))
-                {
-                    int length = MRConnectionProtocol.DecodeFrameLength(header, Math.Max(1, maxMessageBytes));
-                    var payload = new byte[length];
-                    if (!await MRConnectionProtocol.ReadExactlyAsync(stream, payload, token))
-                        throw new EndOfStreamException("Połączenie zamknięto przed odebraniem treści ramki.");
-
-                    string json = new UTF8Encoding(false, true).GetString(payload);
-                    MainThreadDispatcher.RunOnMainThread(() => DeliverSample(session, token, json));
-                }
+                int frameLimit = Math.Max(1, maxMessageBytes);
+                int pendingLimit = Math.Max(1, maxPendingSamples);
+                await Task.Run(() => MRConnectionProtocol.ReceiveFramesAsync(stream, frameLimit, pendingLimit,
+                    json => DeliverSample(session, token, json), token), token);
             }
         }
         catch (Exception) when (token.IsCancellationRequested)
@@ -249,6 +248,51 @@ public sealed class ConnectionServiceMR : MonoBehaviour
 
 internal static class MRConnectionProtocol
 {
+    internal static async Task ReceiveFramesAsync(Stream stream, int maximumFrameBytes, int pendingLimit,
+        Action<string> deliver, CancellationToken token)
+    {
+        if (stream == null) throw new ArgumentNullException(nameof(stream));
+        if (deliver == null) throw new ArgumentNullException(nameof(deliver));
+        if (pendingLimit < 1) throw new ArgumentOutOfRangeException(nameof(pendingLimit));
+        var availableSlots = new SemaphoreSlim(pendingLimit, pendingLimit);
+        var header = new byte[4];
+        var encoding = new UTF8Encoding(false, true);
+        try
+        {
+            while (await ReadExactlyAsync(stream, header, token).ConfigureAwait(false))
+            {
+                int length = DecodeFrameLength(header, maximumFrameBytes);
+                var payload = new byte[length];
+                if (!await ReadExactlyAsync(stream, payload, token).ConfigureAwait(false))
+                    throw new EndOfStreamException("Połączenie zamknięto przed odebraniem treści ramki.");
+                string json = encoding.GetString(payload);
+                await availableSlots.WaitAsync(token).ConfigureAwait(false);
+                bool queued = false;
+                try
+                {
+                    token.ThrowIfCancellationRequested();
+                    MainThreadDispatcher.RunOnMainThread(() =>
+                    {
+                        try
+                        {
+                            if (!token.IsCancellationRequested) deliver(json);
+                        }
+                        finally { availableSlots.Release(); }
+                    });
+                    queued = true;
+                }
+                finally
+                {
+                    if (!queued) availableSlots.Release();
+                }
+            }
+        }
+        finally
+        {
+            MainThreadDispatcher.RunOnMainThread(availableSlots.Dispose);
+        }
+    }
+
     internal static bool TryParseDiscoveryReply(string message, IPAddress address, out IPEndPoint endpoint)
     {
         endpoint = null;
@@ -276,7 +320,7 @@ internal static class MRConnectionProtocol
         int offset = 0;
         while (offset < buffer.Length)
         {
-            int read = await stream.ReadAsync(buffer, offset, buffer.Length - offset, token);
+            int read = await stream.ReadAsync(buffer, offset, buffer.Length - offset, token).ConfigureAwait(false);
             if (read == 0)
             {
                 if (offset == 0) return false;
