@@ -23,6 +23,12 @@ func main() {
 	rout.Get("/machine-state", handler.GetMachineStateHandler)
 	rout.Get("/random-data", handler.RandomData)
 
+	datasets := handler.ListDatasets(cfg)
+
+	rout.Get("/datasets", func(w http.ResponseWriter, r *http.Request) {
+		handler.Datasets(w, r, datasets)
+	})
+
 	addr := fmt.Sprintf(":%s", cfg.Port)
 	log.Printf("Listen on http://localhost%s", addr)
 

@@ -63,3 +63,8 @@ func GetMachineStateHandler(w http.ResponseWriter, r *http.Request) {
 func RandomData(w http.ResponseWriter, r *http.Request) {
 
 }
+
+func Datasets(w http.ResponseWriter, r *http.Request, datasets []Dataset) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(datasets)
+}
