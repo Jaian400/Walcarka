@@ -1,0 +1,12 @@
+Backend TODO
+
+- Upload: save and validate CSV, then call datasets.Refresh().
+- Connection: add ping/pong heartbeats and read/write deadlines.
+- Optional: persist dataset IDs across server restarts.
+
+Unity overview TODO
+
+- Modes: Last / Minimum / Maximum / Mean (sample average).
+- Show dataset datetime, sample count, start/end time and duration.
+- Add peak current/torque magnitude.
+- Calculate statistics over the full dataset, beyond the history limit.

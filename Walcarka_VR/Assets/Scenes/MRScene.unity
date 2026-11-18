@@ -5569,7 +5569,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &767725560
 Transform:
   m_ObjectHideFlags: 0
@@ -9076,6 +9076,10 @@ MonoBehaviour:
   tcpConnectionTimeoutMs: 5000
   maxMessageBytes: 65536
   maxPendingSamples: 128
+  httpPort: 8080
+  httpTimeoutSeconds: 10
+  reconnectDelayMs: 1000
+  maxReconnectDelayMs: 10000
   connectionText: {fileID: 1632706332}
   receviedDataText: {fileID: 1358743880}
 --- !u!1 &1389007681
@@ -14191,7 +14195,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2010699908
 Transform:
   m_ObjectHideFlags: 0
@@ -15030,6 +15034,10 @@ PrefabInstance:
       propertyPath: _surface
       value: 
       objectReference: {fileID: 1316019608}
+    - target: {fileID: 6578226344094297070, guid: ed17619d9b76f8a4ba214b04c3260947, type: 3}
+      propertyPath: connectionService
+      value: 
+      objectReference: {fileID: 1384817624}
     - target: {fileID: 7711218304989943991, guid: ed17619d9b76f8a4ba214b04c3260947, type: 3}
       propertyPath: m_Enabled
       value: 0

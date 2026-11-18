@@ -34,7 +34,7 @@ public sealed class ConnectionArrow : MonoBehaviour, IPointerClickHandler
 
     private void ApplyState(MRConnectionState state)
     {
-        Material material = (state == MRConnectionState.Connected || state == MRConnectionState.DatasetReceived) ? connectedMaterial
+        Material material = state == MRConnectionState.Connected ? connectedMaterial
             : state == MRConnectionState.Connecting ? connectingMaterial : disconnectedMaterial;
         if (arrowRenderer != null && material != null) arrowRenderer.sharedMaterial = material;
     }

@@ -41,7 +41,7 @@ public sealed class ChartManagerMR : MonoBehaviour
     [SerializeField] private TMP_Text forceDifferenceLabel = null;
     [Tooltip("Extra series on the same Y axis; select metrics with the same unit as Selected Metric.")]
     [SerializeField] private AdditionalSeries[] additionalSeries = Array.Empty<AdditionalSeries>();
-    [Tooltip("Break the line when the source interval exceeds this many seconds; zero disables gap detection.")]
+    [Tooltip("Minimum recording gap in seconds; raised to three times the typical sample interval. Zero disables gap detection.")]
     [SerializeField, Min(0f)] private float gapThresholdSeconds = 0.5f;
 
     [Tooltip("Optional for prefab pages: if empty, resolves the single active StationDataBuffer at runtime.")]
@@ -60,6 +60,7 @@ public sealed class ChartManagerMR : MonoBehaviour
     private readonly Queue<int> pointsPerSample = new Queue<int>();
     private long previousTimeMilliseconds;
     private bool hasPreviousTime;
+    private double gapThresholdMilliseconds;
 
     public long LastRenderedSequence => lastRenderedSequence;
 
@@ -116,6 +117,10 @@ public sealed class ChartManagerMR : MonoBehaviour
             foreach (AdditionalSeries entry in additionalSeries)
                 SetLatestLabel(entry.latestValueLabel, entry.metric, false, 0f);
         dataBuffer.CopySnapshotTo(snapshot);
+        gapThresholdMilliseconds = GetGapThresholdMilliseconds();
+        if (mode == ChartMode.Line)
+            for (int i = 0; i < renderedMetrics.Count; i++)
+                activeChart.series[i].symbol.show = snapshot.Count == 1;
         if (mode == ChartMode.LatestBars)
         {
             if (snapshot.Count > 0) AppendSample(snapshot[snapshot.Count - 1]);
@@ -265,6 +270,20 @@ public sealed class ChartManagerMR : MonoBehaviour
         RefreshFromBuffer();
     }
 
+    private double GetGapThresholdMilliseconds()
+    {
+        if (mode != ChartMode.Line || gapThresholdSeconds <= 0f) return 0d;
+        var intervals = new List<long>();
+        for (int i = 1; i < snapshot.Count; i++)
+        {
+            long interval = snapshot[i].TimeMilliseconds - snapshot[i - 1].TimeMilliseconds;
+            if (interval > 0) intervals.Add(interval);
+        }
+        intervals.Sort();
+        double typicalInterval = intervals.Count == 0 ? 0d : intervals[(intervals.Count - 1) / 2];
+        return Math.Max(gapThresholdSeconds * 1000d, typicalInterval * 3d);
+    }
+
     private void AppendSample(StationDataSample sample)
     {
         if (sample.Sequence <= lastRenderedSequence) return;
@@ -292,7 +311,7 @@ public sealed class ChartManagerMR : MonoBehaviour
 
         long delta = sample.TimeMilliseconds - previousTimeMilliseconds;
         bool gap = mode == ChartMode.Line && hasPreviousTime && (delta < 0 ||
-            (gapThresholdSeconds > 0f && delta > gapThresholdSeconds * 1000d));
+            (gapThresholdMilliseconds > 0d && delta > gapThresholdMilliseconds));
         double x = sample.TimeMilliseconds / 1000d;
         for (int i = 0; i < renderedMetrics.Count; i++)
         {

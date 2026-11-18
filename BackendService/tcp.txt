@@ -1,0 +1,58 @@
+TCP backend - current behavior
+
+Connect to the configured TCP port (default: 8081). The server waits for a request.
+Every message is UTF-8 JSON prefixed by its byte length: four bytes, big-endian.
+Maximum JSON payload: 64 KiB.
+
+Request a dataset using its ID from GET /datasets:
+{"type":"subscribe","followLatest":false,"datasetId":0}
+
+Follow the latest dataset (the last item in the list):
+{"type":"subscribe","followLatest":true}
+This sends the latest dataset immediately and enables automatic updates for this client.
+A manual selection disables following latest for that client.
+
+Change following mode without transmitting measurements:
+{"type":"subscribe","followLatest":false,"sendData":false}
+Omitting sendData preserves the normal immediate-transfer behavior.
+
+The server sends, in order:
+1. dataset_start: datasetId.
+2. measurement: existing measurement fields plus type="measurement".
+3. dataset_end: datasetId and sampleCount.
+
+CSV is read once; the header is skipped. Samples are counted as they are sent.
+The client should accept completion only after dataset_end and a matching count.
+The connection stays open. Send another subscribe request to load another dataset.
+Each client is handled independently; transfers on one connection run sequentially.
+After saving and validating an upload, call datasets.Refresh() on the shared DatasetStore.
+It refreshes /datasets and signals clients. Followers receive the latest dataset if its ID changed.
+Active transfers finish first; multiple refreshes coalesce into the newest pending update.
+Manual clients keep their selected dataset. No directory polling is used.
+IDs remain stable during refreshes but are not persisted across server restarts.
+
+Invalid selections return error. File, CSV, framing or network failures close the connection.
+Heartbeats are not implemented yet.
+
+Unity - required behavior
+
+1. Discover the backend through UDP, then connect to its advertised TCP port.
+2. Fetch GET /datasets from the HTTP service (default: port 8080).
+   Cache the list after connection; opening the panel reuses it without downloading measurements.
+   Startup enables auto-send, selects the last dataset and requests its measurements automatically.
+   Arrows browse datetime labels and stop auto-send without requesting a dataset.
+   Auto-send On selects the newest listed dataset; it is activated by Refresh.
+   Refresh reloads the list and sends subscribe for the chosen ID or Follow latest.
+3. Read complete length-prefixed frames on a worker; TCP reads may be fragmented.
+   Route JSON by type. Keep main-thread delivery bounded.
+4. On dataset_start, create a temporary history buffer and reset the received count.
+   Add valid measurements to it. Count every sample, even beyond the history limit.
+5. On dataset_end, verify the dataset ID and sampleCount against received samples.
+   Replace StationDataBuffer and refresh charts/overview together on the main thread.
+   Reject transfers containing invalid samples. Preserve displayed data until success.
+6. Keep TCP open after completion. Allow another selection after the active transfer ends.
+   On error, display its message and keep the current dataset.
+7. On disconnect, discard the incomplete transfer and reconnect with a capped retry delay.
+   Reload dataset metadata. Resume latest when auto-send is active; manual mode waits for Refresh.
+8. Track connection status separately from loading. Idle failures may remain undetected
+   until network activity because heartbeats are not implemented yet.

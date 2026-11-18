@@ -1,8 +1,9 @@
 *.htm
-*.png
 *.jpg
 *.pyc
 .venv
+BackendPython/wykresy_wyniki/*.png
+BackendPython/images/*.png
 
 # Unity build artifacts
 /[Bb]uild/

@@ -531,7 +531,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: 7358e191-33b7-43ca-b066-b2f00531ac66
-  instanceId: 4e119f2e-0014-4ff5-8d19-b15f4f6934eb
+  instanceId: e8bff462-225f-4892-9b09-f5c0b0f656db
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: 
@@ -2047,7 +2047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Meta.XR.BuildingBlocks::Meta.XR.BuildingBlocks.BuildingBlock
   blockId: f8766c17-aaf8-4b55-9431-de8deea83842
-  instanceId: fe57c935-916d-4897-a156-3728483618ae
+  instanceId: 01aa4983-0542-41c5-b8ff-39f8211c890c
   version: 1
   installationRoutineCheckpoint:
     _installationRoutineId: f8338144-8280-4ff6-9455-ae2bb9c20fe8
@@ -2509,7 +2509,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3158914936708797236, guid: 2dca943cc0f1a4d4e829be129b057937, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.398
+      value: 0.37
       objectReference: {fileID: 0}
     - target: {fileID: 3158914936708797236, guid: 2dca943cc0f1a4d4e829be129b057937, type: 3}
       propertyPath: m_LocalPosition.z

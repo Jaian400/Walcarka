@@ -13,6 +13,7 @@ public sealed class StationDataBuffer : MonoBehaviour
 
     private ConnectionServiceMR subscribedService;
     private StationSampleHistory history;
+    private StationSampleHistory incomingHistory;
 
     public int Count => History.Count;
     public int Capacity => History.Capacity;
@@ -43,12 +44,20 @@ public sealed class StationDataBuffer : MonoBehaviour
 
         subscribedService = connectionService;
         subscribedService.OnDataReceived += AddSample;
+        subscribedService.OnDatasetStarted += BeginDataset;
+        subscribedService.OnDatasetFinished += FinishDataset;
     }
 
     private void OnDisable()
     {
-        if (subscribedService != null) subscribedService.OnDataReceived -= AddSample;
+        if (subscribedService != null)
+        {
+            subscribedService.OnDataReceived -= AddSample;
+            subscribedService.OnDatasetStarted -= BeginDataset;
+            subscribedService.OnDatasetFinished -= FinishDataset;
+        }
         subscribedService = null;
+        incomingHistory = null;
     }
 
     private void Update()
@@ -60,6 +69,11 @@ public sealed class StationDataBuffer : MonoBehaviour
     public void AddSample(RollerData sample)
     {
         if (!MRConnectionProtocol.IsValidSample(sample)) return;
+        if (incomingHistory != null)
+        {
+            incomingHistory.Add(sample);
+            return;
+        }
         StationDataSample stored = History.Add(sample);
         Action<StationDataSample> listeners = SampleAdded;
         if (listeners == null) return;
@@ -75,6 +89,21 @@ public sealed class StationDataBuffer : MonoBehaviour
         History.CopySnapshotTo(destination);
     }
 
+    private void BeginDataset()
+    {
+        incomingHistory = new StationSampleHistory(Math.Max(1, maxSamples));
+    }
+
+    private void FinishDataset(bool complete)
+    {
+        StationSampleHistory received = incomingHistory;
+        incomingHistory = null;
+        if (!complete || received == null) return;
+        received.Resize(Math.Max(1, maxSamples));
+        history = received;
+        NotifyHistoryReset();
+    }
+
     public void ClearHistory()
     {
         if (!Application.isPlaying) return;
@@ -85,6 +114,7 @@ public sealed class StationDataBuffer : MonoBehaviour
     public void SetCapacity(int capacity)
     {
         maxSamples = Math.Max(1, capacity);
+        incomingHistory?.Resize(maxSamples);
         if (History.Capacity == maxSamples) return;
         History.Resize(maxSamples);
         NotifyHistoryReset();

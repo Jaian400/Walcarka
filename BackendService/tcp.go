@@ -2,20 +2,21 @@ package main
 
 import (
 	"BackendService/config"
+	"BackendService/handler"
 	"bufio"
 	"crypto/rand"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
 
-func startTCPServer(cfg *config.Config) {
+func startTCPServer(cfg *config.Config, datasets *handler.DatasetStore) {
 	addr := fmt.Sprintf(":%s", cfg.PortTCP)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -29,46 +30,142 @@ func startTCPServer(cfg *config.Config) {
 		if err != nil {
 			continue
 		}
-		go handleTCPClient(cfg, conn)
+		go handleTCPClient(cfg, datasets, conn)
 	}
 }
 
-func handleTCPClient(cfg *config.Config, conn net.Conn) {
+func handleTCPClient(cfg *config.Config, datasets *handler.DatasetStore, conn net.Conn) {
 	defer conn.Close()
 	log.Println("TCP Connection started")
 	remoteAddr := conn.RemoteAddr().String()
 	log.Printf("Client: %s\n", remoteAddr)
 
-	sendData(cfg, conn)
+	updates, unwatch := datasets.Watch()
+	defer unwatch()
+	done := make(chan struct{})
+	defer close(done)
+	type incomingRequest struct {
+		message ClientMessage
+		err     error
+	}
+	requests := make(chan incomingRequest, 1)
+	go func() {
+		for {
+			var request ClientMessage
+			err := readMessage(conn, &request)
+			select {
+			case requests <- incomingRequest{message: request, err: err}:
+			case <-done:
+				return
+			}
+			if err != nil {
+				return
+			}
+		}
+	}()
+
+	followLatest := false
+	selectedID := -1
+	for {
+		var request ClientMessage
+		automatic := false
+		select {
+		case incoming := <-requests:
+			if incoming.err != nil {
+				if incoming.err != io.EOF {
+					log.Printf("Reading request from %s failed: %v", remoteAddr, incoming.err)
+				}
+				return
+			}
+			request = incoming.message
+			if request.Type == messageSubscribe && request.SendData != nil && !*request.SendData {
+				followLatest = request.FollowLatest
+				continue
+			}
+		case <-updates:
+			if !followLatest {
+				continue
+			}
+			request = ClientMessage{Type: messageSubscribe, FollowLatest: true}
+			automatic = true
+		}
+		dataset, err := datasetForRequest(datasets, request)
+		if err != nil {
+			if err := writeMessage(conn, ErrorMessage{Type: messageError, Message: err.Error()}); err != nil {
+				return
+			}
+			continue
+		}
+		if automatic && dataset.ID == selectedID {
+			continue
+		}
+		followLatest = request.FollowLatest
+		if err := sendData(cfg, conn, dataset); err != nil {
+			log.Printf("Dataset transfer to %s failed: %v", remoteAddr, err)
+			return
+		}
+		selectedID = dataset.ID
+	}
 }
 
-func sendData(cfg *config.Config, conn net.Conn) {
-	file, err := os.Open(cfg.StaticPath + "WalcarkaDuo_2025_05_26_13_57.csv")
+func datasetForRequest(store *handler.DatasetStore, request ClientMessage) (handler.Dataset, error) {
+	if request.Type != messageSubscribe {
+		return handler.Dataset{}, fmt.Errorf("unsupported message type: %q", request.Type)
+	}
+	datasets := store.List()
+	if request.FollowLatest {
+		if len(datasets) == 0 {
+			return handler.Dataset{}, fmt.Errorf("no datasets available")
+		}
+		return datasets[len(datasets)-1], nil
+	}
+	if request.DatasetID == nil {
+		return handler.Dataset{}, fmt.Errorf("datasetId is required")
+	}
+	for _, dataset := range datasets {
+		if dataset.ID == *request.DatasetID {
+			return dataset, nil
+		}
+	}
+	return handler.Dataset{}, fmt.Errorf("dataset %d not found", *request.DatasetID)
+}
+
+func sendData(cfg *config.Config, w io.Writer, dataset handler.Dataset) error {
+	file, err := os.Open(filepath.Join(cfg.StaticPath, dataset.Filename))
 	if err != nil {
-		log.Println("Error while opening a file:", err)
-		return
+		return err
 	}
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		data := parseCsvData(line)
-
-		jsonBytes, err := json.Marshal(data)
-		if err != nil {
-			continue
+	if !scanner.Scan() {
+		if err := scanner.Err(); err != nil {
+			return err
 		}
-
-		size := uint32(len(jsonBytes))
-		sizeBuf := make([]byte, 4)
-		binary.BigEndian.PutUint32(sizeBuf, size)
-
-		conn.Write(sizeBuf)
-		conn.Write(jsonBytes)
-
+		return fmt.Errorf("missing CSV header")
 	}
+	if err := writeMessage(w, DatasetStartMessage{
+		Type: messageDatasetStart, DatasetID: dataset.ID,
+	}); err != nil {
+		return err
+	}
+
+	count := 0
+	for scanner.Scan() {
+		data := parseCsvData(scanner.Text())
+		if err := writeMessage(w, MeasurementMessage{
+			Type: messageMeasurement, RollerData: data,
+		}); err != nil {
+			return err
+		}
+		count++
+	}
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+	return writeMessage(w, DatasetEndMessage{
+		Type: messageDatasetEnd, DatasetID: dataset.ID, SampleCount: count,
+	})
 }
 
 type RollerData struct {
